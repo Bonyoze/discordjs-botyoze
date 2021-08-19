@@ -1,21 +1,19 @@
-const Command = require("../../../structures/Command");
+const bot = require("../../bot.js"),
+Command = require("../../../structures/Command");
 
-module.exports = class Ping extends Command {
-  constructor() {
-    super({
-      name: "ping",
-      description: "Simple ping command",
-      category: "utility",
-      cooldown: 1
-    });
-  }
-
-  async run(message) {
-    await message.channel.send("**`Pong!`**").then(async sent => {
-      await sent.edit("**`Pong! Took ["
-        + (sent.createdTimestamp - message.createdTimestamp)
-        + " milliseconds] to respond`**"
+module.exports = new Command(bot,
+  {
+    name: "ping",
+    description: "Simple ping command",
+    category: "utility",
+    cooldown: 1
+  },
+  async interaction => {
+    return await interaction.reply({ content: "Pong!", fetchReply: true }).then(async sent => {
+      await interaction.editReply("Pong! `Took ["
+        + (sent.createdTimestamp - interaction.createdTimestamp)
+        + " milliseconds] to respond`"
       );
     });
   }
-}
+);

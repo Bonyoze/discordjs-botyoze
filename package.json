@@ -9,13 +9,15 @@
   "author": "Bonyoze",
   "license": "UNLICENSED",
   "dependencies": {
+    "@discordjs/rest": "^0.1.0-canary.0",
     "cheerio": "^1.0.0-rc.9",
+    "discord-api-types": "^0.22.0",
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
     "fs-extra": "^10.0.0",
-    "mysql": "^2.18.1",
     "mysql2": "^2.3.0",
     "node-fetch": "^2.6.1",
-    "qs": "^6.10.1"
+    "qs": "^6.10.1",
+    "vm2": "^3.9.3"
   }
 }

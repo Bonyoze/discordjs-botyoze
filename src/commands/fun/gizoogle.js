@@ -1,31 +1,28 @@
-const Command = require("../../../structures/Command"),
+const bot = require("../../bot.js"),
+Command = require("../../../structures/Command"),
 fetch = require("node-fetch"),
 cheerio = require("cheerio"),
 qs = require("qs");
 
-module.exports = class Gizoogle extends Command {
-  constructor() {
-    super({
-      name: "gizoogle",
-      description: "Gizoogles some text",
-      options: [
-        {
-          type: 3,
-          name: "text",
-          description: "A sentence",
-          required: true
-        }
-      ],
-      category: "fun",
-      cooldown: 4
-    });
-  }
-
-  async run(message) {
-    const textInput = message.content.split(" ").slice(1).join(" ");
-    
-    const payload = qs.stringify({ translatetext: textInput });
-    const body = await fetch("http://gizoogle.net/textilizer.php", {
+module.exports = new Command(bot,
+  {
+    name: "gizoogle",
+    description: "Gizoogles some text",
+    options: [
+      {
+        type: 3, // STRING
+        name: "text",
+        description: "Any english text (works best with long sentences)",
+        required: true
+      }
+    ],
+    category: "fun",
+    cooldown: 5
+  },
+  async interaction => {
+    const textInput = interaction.options.getString("text"),
+    payload = qs.stringify({ translatetext: textInput }),
+    body = await fetch("http://gizoogle.net/textilizer.php", {
       method: "post",
       body: payload,
       headers: {
@@ -34,10 +31,9 @@ module.exports = class Gizoogle extends Command {
       }
     }).then(res => res.text()).then(body => { return body; });
 
-    const html = cheerio.load(body);
+    const html = cheerio.load(body),
+    textOutput = html('textarea[name="translatetext"]').val();
 
-    const textOutput = html('textarea[name="translatetext"]').val();
-    
-    return await message.channel.send(textOutput != textInput ? textOutput : "⚠ **`Text was unable to be modified (try adding more words)`**");
+    return await interaction.reply({ content: textOutput != textInput ? textOutput : "⚠ **`Text was unable to be modified (try adding more words)`**", ephemeral: textOutput === textInput });
   }
-}
+);
