@@ -20,6 +20,7 @@ module.exports = new Command(bot,
     cooldown: 5
   },
   async interaction => {
+    await interaction.deferReply();
     const textInput = interaction.options.getString("text"),
     payload = qs.stringify({ translatetext: textInput }),
     body = await fetch("http://gizoogle.net/textilizer.php", {
@@ -34,6 +35,6 @@ module.exports = new Command(bot,
     const html = cheerio.load(body),
     textOutput = html('textarea[name="translatetext"]').val();
 
-    return await interaction.reply({ content: textOutput != textInput ? textOutput : "⚠ **`Text was unable to be modified (try adding more words)`**", ephemeral: textOutput === textInput });
+    return await interaction.editReply({ content: textOutput != textInput ? textOutput : "⚠ **`Text was unable to be modified (try adding more words)`**", ephemeral: textOutput === textInput });
   }
 );

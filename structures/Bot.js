@@ -1,4 +1,4 @@
-const { Client, Intents, Collection } = require("discord.js"),
+const { Client, Intents, Collection, MessageEmbed } = require("discord.js"),
 { REST } = require("@discordjs/rest"),
 rest = new REST({ version: "9" }).setToken(process.env.BOT_TOKEN),
 { Routes } = require("discord-api-types/v9"),
@@ -25,35 +25,30 @@ const botIntents = [
 
 module.exports = class Bot {
   constructor() {
-    const client = this.client = new Client({ intents: botIntents, ws: { properties: { $browser: "Discord iOS" } } });
+    this.client = new Client({ intents: botIntents, ws: { properties: { $browser: "Discord iOS" } } });
     this.commands = new Collection();
 
-    client.on("ready", async () => {
+    this.client.on("ready", async () => {
       await this.loadCommands();
     
       console.log("Client is ready!");
     });
 
-    client.on("interactionCreate", async interaction => {
-      if (!interaction.isCommand()) return;
-
-      const command = this.getCommand(interaction.commandName);
-
-      if (command.data.adminOnly && !interaction.user.hasPermission("ADMINISTRATOR")) return interaction.reply("**`This command may only be used by administrators in this server`**");
-      if (command.data.ownerOnly && interaction.user.id != process.env.BOT_OWNER_ID) return interaction.reply("**`This command may only be used by the owner of the bot`**");
-
-      await command.run(interaction, interaction.user).catch(async err => {
-        await interaction.followUp(
-          "⚠ **`An error occurred while the command was executing:`**```js\n"
-          + err
-          + "\n```"
-        );
-        return;
-      });
+    this.client.on("interactionCreate", async interaction => {
+      switch (true) {
+        case interaction.isCommand():
+          return await this.handleCommandInteraction(interaction);
+        case interaction.isButton():
+          return;
+        case interaction.isContextMenu():
+          return;
+        case interaction.isSelectMenu():
+          return;
+      }
     });
     
     // login client
-    client.login(process.env.BOT_TOKEN);
+    this.client.login(process.env.BOT_TOKEN);
   }
 
   async loadCommands() {
@@ -94,6 +89,29 @@ module.exports = class Bot {
     }*/
 
     console.log("Finished loading commands.");
+  }
+
+  async handleCommandInteraction(interaction) {
+    const command = this.getCommand(interaction.commandName);
+
+    if (command.data.adminOnly && !interaction.user.hasPermission("ADMINISTRATOR")) return interaction.reply("**`This command may only be used by administrators in this server`**");
+    if (command.data.ownerOnly && interaction.user.id != process.env.BOT_OWNER_ID) return interaction.reply("**`This command may only be used by the owner of the bot`**");
+
+    await command.run(interaction, interaction.user).catch(async err => {
+      const errEmbed = new MessageEmbed()
+        .setColor("#000000")
+        .setAuthor("An error occurred while the command was executing", this.client.user.displayAvatarURL({ format: "png", dynamic: true }))
+        .setTitle(`\`${command.data.category.charAt(0).toUpperCase() + command.data.category.slice(1)} > ${command.data.name.charAt(0).toUpperCase() + command.data.name.slice(1)}\``)
+        .setDescription("```js\n" + err + "\n```");
+
+      return interaction
+        .reply({ embeds: [errEmbed], ephemeral: true })
+        .catch(() => {
+          interaction
+            .followUp({ embeds: [errEmbed], ephemeral: true })
+            .catch(console.log);
+        });
+    });
   }
 
   getCommand(name) {
