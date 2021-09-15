@@ -1,25 +1,19 @@
-const bot = require("../../bot.js"),
-Command = require("../../../structures/Command"),
+const { SlashCommandBuilder } = require("@discordjs/builders"),
 fetch = require("node-fetch"),
 cheerio = require("cheerio"),
 qs = require("qs");
 
-module.exports = new Command(bot,
-  {
-    name: "gizoogle",
-    description: "Gizoogles some text",
-    options: [
-      {
-        type: 3, // STRING
-        name: "text",
-        description: "Any english text (works best with long sentences)",
-        required: true
-      }
-    ],
-    category: "fun",
-    cooldown: 5
-  },
-  async interaction => {
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName("gizoogle")
+    .setDescription("Gizoogles some text")
+    .addStringOption(option =>
+      option
+        .setName("text")
+        .setDescription("Any english text (works best with long sentences)")
+        .setRequired(true)
+    ),
+  async execute(interaction) {
     await interaction.deferReply();
     const textInput = interaction.options.getString("text"),
     payload = qs.stringify({ translatetext: textInput }),
@@ -37,4 +31,4 @@ module.exports = new Command(bot,
 
     return await interaction.editReply({ content: textOutput != textInput ? textOutput : "⚠ **`Text was unable to be modified (try adding more words)`**", ephemeral: textOutput === textInput });
   }
-);
+};

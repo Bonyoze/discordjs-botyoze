@@ -1,22 +1,17 @@
-const bot = require("../../bot.js"),
-Command = require("../../../structures/Command"),
+const { SlashCommandBuilder } = require("@discordjs/builders"),
+bot = require("../../bot.js"),
 { MessageEmbed } = require("discord.js");
 
-module.exports = new Command(bot,
-  {
-    name: "help",
-    description: "Shows commands and command info",
-    options: [
-      {
-        type: 3, // STRING
-        name: "command",
-        description: "A command name"
-      }
-    ],
-    category: "utility",
-    cooldown: 1
-  },
-  async interaction => {
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName("help")
+    .setDescription("Shows some bot and command info")
+    .addStringOption(option =>
+      option
+        .setName("command")
+        .setDescription("Name of a command")
+    ),
+  async execute(interaction) {
     const cmdInput = interaction.options.getString("command");
     
     if (cmdInput) {
@@ -43,11 +38,11 @@ module.exports = new Command(bot,
     for await (const [category, commands] of Array.from(bot.commands)) {
       const cmds = Array.from(commands.keys()).map(str => `\`${str}\``);
       totalCmds += cmds.length;
-      embed.addField(`**[ ${category.charAt(0).toUpperCase() + category.slice(1)} ]**`, cmds.join("\n"), true);
+      embed.addField(`**[ ${category.charAt(0).toUpperCase() + category.slice(1)} ]**`, cmds.length > 0 ? cmds.join("\n") : "N/A", true);
     }
     
     embed.setFooter(`${totalCmds} total commands`);
 
     return await interaction.reply({ embeds: [embed] });
   }
-);
+};

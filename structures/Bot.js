@@ -34,6 +34,7 @@ module.exports = class Bot {
       console.log("Client is ready!");
     });
 
+    // interaction handling
     this.client.on("interactionCreate", async interaction => {
       switch (true) {
         case interaction.isCommand():
@@ -53,21 +54,21 @@ module.exports = class Bot {
 
   async loadCommands() {
     console.log("Started loading commands.");
-    let commandsData = [];
+    let slashComms = [];
 
     const categories = fs.readdirSync("./src/commands");
     for (const category of categories) {
       if (!this.commands.get(category)) this.commands.set(category, new Collection());
-      const commands = fs.readdirSync(`./src/commands/${category}`)
+      const commands = fs.readdirSync(`./src/commands/${category}`);
       for (const command of commands) {
         try {
           const cmd = require(`../src/commands/${category}/${command}`);
-          /*if (!slashCommands.includes(cmd.metadata.name)) { // create slash command
-            console.log(cmd.metadata.name);
-            await client.application.commands.create(command.metadata);
-          }*/
-          commandsData.push(cmd.data);
+          slashComms.push(cmd.data.toJSON());
 
+          // add some data
+          cmd.data.category = category;
+
+          // add to collection
           this.commands.get(category).set(cmd.data.name, cmd);
         } catch (err) {
           console.error(`Failed to load command ${command}: ${err.stack}`);
@@ -75,12 +76,13 @@ module.exports = class Bot {
       }
     }
 
+    // reload slash commands
     /*try {
       console.log("Refreshing application (/) commands.");
 
       await rest.put(
         Routes.applicationCommands(process.env.BOT_ID),
-        { body: commandsData }
+        { body: slashComms }
       );
 
       console.log("Successfully reloaded application (/) commands.");
@@ -97,7 +99,7 @@ module.exports = class Bot {
     if (command.data.adminOnly && !interaction.user.hasPermission("ADMINISTRATOR")) return interaction.reply("**`This command may only be used by administrators in this server`**");
     if (command.data.ownerOnly && interaction.user.id != process.env.BOT_OWNER_ID) return interaction.reply("**`This command may only be used by the owner of the bot`**");
 
-    await command.run(interaction, interaction.user).catch(async err => {
+    await command.execute(interaction).catch(async err => {
       const errEmbed = new MessageEmbed()
         .setColor("#000000")
         .setAuthor("An error occurred while the command was executing", this.client.user.displayAvatarURL({ format: "png", dynamic: true }))
