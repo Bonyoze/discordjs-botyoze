@@ -1,5 +1,5 @@
-const { SlashCommandBuilder } = require("@discordjs/builders"),
-bot = require("../../bot.js"),
+const bot = require("../../bot.js"),
+{ SlashCommandBuilder } = require("@discordjs/builders"),
 { MessageEmbed } = require("discord.js");
 
 module.exports = {

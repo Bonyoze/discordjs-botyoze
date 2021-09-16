@@ -9,6 +9,7 @@
   "author": "Bonyoze",
   "license": "UNLICENSED",
   "dependencies": {
+    "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
     "cheerio": "^1.0.0-rc.9",
     "discord-api-types": "^0.22.0",

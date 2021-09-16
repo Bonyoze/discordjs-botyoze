@@ -77,18 +77,16 @@ module.exports = class Bot {
     }
 
     // reload slash commands
-    /*try {
+    try {
       console.log("Refreshing application (/) commands.");
 
       await rest.put(
         Routes.applicationCommands(process.env.BOT_ID),
         { body: slashComms }
-      );
-
-      console.log("Successfully reloaded application (/) commands.");
+      ).then(console.log("Successfully reloaded application (/) commands."));
     } catch (err) {
       console.error(`Encountered an error while refreshing application (/) commands: ${err.stack}`)
-    }*/
+    }
 
     console.log("Finished loading commands.");
   }
