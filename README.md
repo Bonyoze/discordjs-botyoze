@@ -1,7 +1,7 @@
-## Botyoze
-###### A Discord Bot by [Bonyoze](https://github.com/bonyoze)
+# Botyoze
+#### A Discord Bot by [Bonyoze](https://github.com/bonyoze)
 
 WIP
 
-##### Links:
+### Links:
 [Discord Server](https://discord.gg/hnf57sjJDP)
