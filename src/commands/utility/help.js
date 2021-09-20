@@ -1,4 +1,4 @@
-const bot = require("../../bot.js"),
+const { client, getCommand } = require("../../bot.js"),
 { SlashCommandBuilder } = require("@discordjs/builders"),
 { MessageEmbed } = require("discord.js");
 
@@ -15,12 +15,12 @@ module.exports = {
     const cmdInput = interaction.options.getString("command");
     
     if (cmdInput) {
-      const command = bot.getCommand(cmdInput.toLowerCase());
+      const command = getCommand(cmdInput.toLowerCase());
       if (command) {
 
         const embed = new MessageEmbed()
           .setColor("#000000")
-          .setAuthor("Bot Help", bot.client.user.displayAvatarURL({ format: "png", dynamic: true }))
+          .setAuthor("Bot Help", client.user.displayAvatarURL({ format: "png", dynamic: true }))
           .setTitle(`\`${command.data.category.charAt(0).toUpperCase() + command.data.category.slice(1)} > ${command.data.name.charAt(0).toUpperCase() + command.data.name.slice(1)}\``)
           .setDescription(command.data.description);
 
@@ -32,10 +32,10 @@ module.exports = {
 
     const embed = new MessageEmbed()
       .setColor("#000000")
-      .setAuthor("Command Info", bot.client.user.displayAvatarURL({ format: "png", dynamic: true }))
+      .setAuthor("Command Info", client.user.displayAvatarURL({ format: "png", dynamic: true }))
       .setTitle("Use *`/help <command>`* to get info on a command.");
 
-    for await (const [category, commands] of Array.from(bot.commands)) {
+    for await (const [category, commands] of Array.from(client.commands)) {
       const cmds = Array.from(commands.keys()).map(str => `\`${str}\``);
       totalCmds += cmds.length;
       embed.addField(`**[ ${category.charAt(0).toUpperCase() + category.slice(1)} ]**`, cmds.length > 0 ? cmds.join("\n") : "N/A", true);

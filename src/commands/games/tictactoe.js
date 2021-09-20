@@ -1,4 +1,4 @@
-const bot = require("../../bot.js"),
+const { client } = require("../../bot.js"),
 { SlashCommandBuilder } = require("@discordjs/builders"),
 { MessageActionRow, MessageButton, MessageEmbed } = require("discord.js");
 
@@ -110,7 +110,7 @@ module.exports = {
 
             const embed = new MessageEmbed()
               .setColor("#000000")
-              .setAuthor("Tic-Tac-Toe", bot.client.user.displayAvatarURL({ format: "png", dynamic: true }))
+              .setAuthor("Tic-Tac-Toe", client.user.displayAvatarURL({ format: "png", dynamic: true }))
               .setDescription(`*Waiting For ${opponent ? `<@${opponent.id}>` : "An Opponent"} To Join...*`)
               .addField("**Players**", `\`🔵\`<@${user.id}>\n${opponent ? `\`🔴\`<@${opponent.id}>` : "`🔴`\\❔\\❔\\❔"}`)
 
