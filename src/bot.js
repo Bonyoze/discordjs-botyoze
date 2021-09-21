@@ -88,7 +88,7 @@ const loadCommands = async () => {
 }
 
 const handleCommandInteraction = async interaction => {
-  const command = getCommand(interaction.commandName);
+  const command = await getCommand(interaction.commandName);
 
   if (command.data.adminOnly && !interaction.user.hasPermission("ADMINISTRATOR")) return interaction.reply("**`This command may only be used by administrators in this server`**");
   if (command.data.ownerOnly && interaction.user.id != process.env.BOT_OWNER_ID) return interaction.reply("**`This command may only be used by the owner of the bot`**");
