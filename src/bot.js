@@ -43,9 +43,23 @@ client.on("interactionCreate", async interaction => {
       return;
   }
 });
-    
+
 // login client
 client.login(process.env.BOT_TOKEN);
+
+// create temp files folder
+if (!fs.existsSync("./tmp")) fs.mkdirSync("./tmp");
+
+const getErrInfo = stack => {
+  const e = stack.split("\n"),
+  s = e[1].split(/\/|:/);
+  return {
+    name: e[0],
+    file: s[s.length-3].split("src\\").slice(-1)[0],
+    line: s[s.length-2],
+    column: s[s.length-1].slice(0,-1)
+  }
+}
 
 const loadCommands = async () => {
   console.log("Started loading commands.");
@@ -93,25 +107,26 @@ const handleCommandInteraction = async interaction => {
   if (command.data.adminOnly && !interaction.user.hasPermission("ADMINISTRATOR")) return interaction.reply("**`This command may only be used by administrators in this server`**");
   if (command.data.ownerOnly && interaction.user.id != process.env.BOT_OWNER_ID) return interaction.reply("**`This command may only be used by the owner of the bot`**");
 
-  await command.execute(interaction).catch(async err => {
-    const errEmbed = new MessageEmbed()
+  return await command.execute(interaction).catch(async err => {
+    const errInfo = getErrInfo(err.stack),
+    errEmbed = new MessageEmbed()
       .setColor("#000000")
       .setAuthor("An error occurred while the command was executing", client.user.displayAvatarURL({ format: "png", dynamic: true }))
       .setTitle(`\`${command.data.category.charAt(0).toUpperCase() + command.data.category.slice(1)} > ${command.data.name.charAt(0).toUpperCase() + command.data.name.slice(1)}\``)
-      .setDescription("```js\n" + err + "\n```");
+      .setDescription(`**File: **${errInfo.file}\n**Line: **${errInfo.line}\n**Column: **${errInfo.column}\n` + "```js\n" + err + "\n```");
 
-    return interaction
+    return await interaction
       .reply({ embeds: [errEmbed], ephemeral: true })
-      .catch(() => {
+      .catch(
         interaction
           .followUp({ embeds: [errEmbed], ephemeral: true })
-          .catch(console.log);
-      });
+          .catch(console.log)
+      );
   });
 }
 
 const getCommand = async name => {
-  const categories = Array.from(client.commands.values())
+  const categories = Array.from(client.commands.values());
   for (let i = 0; i < categories.length; i++) {
     const commands = Array.from(categories[i].values());
     for (let ii = 0; ii < commands.length; ii++) {

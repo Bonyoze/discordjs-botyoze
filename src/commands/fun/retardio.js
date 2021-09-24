@@ -15,7 +15,7 @@ const getVideoPosts = async (sub, sort, limit) => {
 
   while (posts.length != limit) {
     await fetch(
-      `https://www.reddit.com/r/${sub}/${sort}.json?limit=100&after=t3_${after ?? lastPostId ?? ""}`
+      `https://www.reddit.com/r/${sub}/${sort}.json?limit=100${after ? `&after=t3_${after}` : lastPostId ? `&after=t3_${lastPostId}` : ""}`
     )
       .then(resp => resp.json())
       .then(async body => {
@@ -34,83 +34,6 @@ const getVideoPosts = async (sub, sort, limit) => {
   return posts;
 }
 
-const loadVideos = async (total, dir) => {
-  let posts = await getVideoPosts("okbuddyretard", "hot", postBatchSize),
-  loaded = [];
-
-  await fs.mkdir(dir);
-
-  for (let i = 0; i < total; i++) {
-    await new Promise(async resolve => {
-      let postUseable, post, resolution;
-
-      while (!postUseable) {
-        if (posts.length == 0) return;
-
-        const rand = Math.floor(Math.random() * posts.length);
-        post = posts[rand];
-        posts.splice(rand, 1);
-
-        await (async () => {
-          for (const res of resolutions) {
-            const videoValid = await fetch(`${post.data.url}/DASH_${res}.mp4`)
-              .then(async resp => {
-                const data = await resp.text();
-                if (resp.status != 200 || data.length / 1024 / 1024 >= vidMaxSize) {
-                  await fetch(`${post.data.url}/DASH_${res}`) // check for old video path
-                    .then(async resp => {
-                      const data = await resp.text();
-                      return resp.status == 200 && data.length / 1024 / 1024 < vidMaxSize;
-                    });
-                } else return true;
-              });
-            
-            if (videoValid) {
-              resolution = res;
-              postUseable = true;
-              return;
-            }
-          }
-        })();
-      }
-
-      const fileDir = `${dir}/${post.data.id}.mp4`,
-      proc = new ffmpeg()
-        .addInput(`${post.data.url}/DASH_${resolution}.mp4`)
-        .withVideoCodec("libx264")
-        .withVideoBitrate(1000)
-        .addOptions(["-crf 24", "-preset veryfast"])
-        .output(fileDir)
-        .on("error", err => {
-          console.log("Retardio Ffmpeg Error: " + err);
-        })
-        .on("end", () => {
-          loaded.push(fileDir);
-          resolve();
-        });
-        
-      const audioValid = await fetch(`${post.data.url}/DASH_audio.mp4`)
-        .then(async resp => {
-          if (resp.status != 200) {
-            await fetch(`${post.data.url}/audio`) // check for old audio path
-              .then(resp => {
-                return resp.status == 200;
-              });
-          } else return true;
-        });
-
-      if (audioValid)
-        proc
-          .addInput(`${post.data.url}/DASH_audio.mp4`)
-          .withAudioCodec("aac");
-
-      proc.run();
-    });
-  }
-
-  return loaded; // return video paths
-}
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("retardio")
@@ -123,16 +46,82 @@ module.exports = {
   async execute(interaction) {
     await interaction.deferReply();
 
-    const amount = interaction.options.getNumber("amount");
+    const amount = interaction.options.getNumber("amount"),
+    total = amount ? Math.min(Math.max(amount, 1), 10) : 1,
+    dir = `./tmp/${interaction.id}`;
 
-    const dir = `./tmp/${interaction.id}`,
-    loaded = await loadVideos(amount ? Math.min(Math.max(amount, 1), 10) : 1, dir);
+    let posts = await getVideoPosts("okbuddyretard", "hot", postBatchSize);
 
-    return await interaction.editReply({
-      files: loaded
-    })
-      .then(() => {
-        fs.rm(dir, { recursive: true }); // remove the temp files
-      });
+    await fs.mkdir(dir);
+
+    for (let i = 0; i < total; i++) {
+      await new Promise(async resolve => {
+        let postUseable, post, resolution;
+
+        while (!postUseable) {
+          if (posts.length == 0) return;
+
+          const rand = Math.floor(Math.random() * posts.length);
+          post = posts[rand];
+          posts.splice(rand, 1);
+
+          await (async () => {
+            for (const res of resolutions) {
+              const videoValid = await fetch(`${post.data.url}/DASH_${res}.mp4`)
+                .then(async resp => {
+                  const data = await resp.text();
+                  if (resp.status != 200 || data.length / 1024 / 1024 >= vidMaxSize) {
+                    await fetch(`${post.data.url}/DASH_${res}`) // check for old video path
+                      .then(async resp => {
+                        const data = await resp.text();
+                        return resp.status == 200 && data.length / 1024 / 1024 < vidMaxSize;
+                      });
+                  } else return true;
+                });
+              
+              if (videoValid) {
+                resolution = res;
+                postUseable = true;
+                return;
+              }
+            }
+          })();
+        }
+
+        const fileDir = `${dir}/${post.data.id}.mp4`,
+        proc = new ffmpeg()
+          .addInput(`${post.data.url}/DASH_${resolution}.mp4`)
+          .withVideoCodec("libx264")
+          .withVideoBitrate(1000)
+          .addOptions(["-crf 24", "-preset veryfast"])
+          .output(fileDir)
+          .on("error", err => {
+            console.log("Retardio Ffmpeg Error: " + err);
+          })
+          .on("end", async () => {
+            resolve(fileDir);
+          });
+          
+        const audioValid = await fetch(`${post.data.url}/DASH_audio.mp4`)
+          .then(async resp => {
+            if (resp.status != 200) {
+              await fetch(`${post.data.url}/audio`) // check for old audio path
+                .then(resp => {
+                  return resp.status == 200;
+                });
+            } else return true;
+          });
+
+        if (audioValid)
+          proc
+            .addInput(`${post.data.url}/DASH_audio.mp4`)
+            .withAudioCodec("aac");
+
+        proc.run();
+      })
+        .then(async file => {
+          await interaction.followUp({ content: total > 1 ? `\`${i + 1}/${total}\`` : undefined, files: [ file ] });
+        });
+    }
   }
 }
