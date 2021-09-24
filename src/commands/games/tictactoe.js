@@ -90,9 +90,10 @@ module.exports = {
 
     switch (group) {
       case "stats":
-        switch (command) {
+        interaction.reply("this command is a work in progress!");
+        /*switch (command) {
           case "global":
-
+            
             break;
           case "guild":
 
@@ -100,7 +101,7 @@ module.exports = {
           case "user":
 
             break;
-        }
+        }*/
         break;
       default:
         switch (command) {
@@ -250,10 +251,10 @@ module.exports = {
 
             break;
           case "cancel":
-
+            interaction.reply("this command is a work in progress!");
             break;
           case "forfeit":
-
+            interaction.reply("this command is a work in progress!");
             break;
         }
         break;
