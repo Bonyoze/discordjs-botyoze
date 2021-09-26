@@ -11,7 +11,7 @@ module.exports = {
     .setName("inspire")
     .setDescription("View questionable inspirational posters"),
   async execute(interaction) {
-    const posts =  await getRedditPosts(
+    const posts = await getRedditPosts(
       "inspirobot",
       "hot",
       lastPostId,
