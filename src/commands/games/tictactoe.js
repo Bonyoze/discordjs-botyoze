@@ -90,7 +90,7 @@ module.exports = {
 
     switch (group) {
       case "stats":
-        interaction.reply("this command is a work in progress!");
+        interaction.editReply("this command is a work in progress!");
         /*switch (command) {
           case "global":
             
@@ -115,7 +115,7 @@ module.exports = {
               .setDescription(`*Waiting For ${opponent ? `<@${opponent.id}>` : "An Opponent"} To Join...*`)
               .addField("**Players**", `\`🔵\`<@${user.id}>\n${opponent ? `\`🔴\`<@${opponent.id}>` : "`🔴`\\❔\\❔\\❔"}`)
 
-            await interaction.reply(
+            await interaction.editReply(
               {
                 embeds: [ embed ],
                 components: [
@@ -251,10 +251,10 @@ module.exports = {
 
             break;
           case "cancel":
-            interaction.reply("this command is a work in progress!");
+            interaction.editReply("this command is a work in progress!");
             break;
           case "forfeit":
-            interaction.reply("this command is a work in progress!");
+            interaction.editReply("this command is a work in progress!");
             break;
         }
         break;

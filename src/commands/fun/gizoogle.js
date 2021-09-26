@@ -14,7 +14,6 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
-    await interaction.deferReply();
     const textInput = interaction.options.getString("text"),
     payload = qs.stringify({ translatetext: textInput }),
     body = await fetch("http://gizoogle.net/textilizer.php", {

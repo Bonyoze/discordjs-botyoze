@@ -24,8 +24,8 @@ module.exports = {
           .setTitle(`\`${command.data.category.charAt(0).toUpperCase() + command.data.category.slice(1)} > ${command.data.name.charAt(0).toUpperCase() + command.data.name.slice(1)}\``)
           .setDescription(command.data.description);
 
-        return await interaction.reply({ embeds: [embed] });
-      } else return await interaction.reply({ content: `⚠ **\`'${cmdInput}' is not a valid command\`**`, ephemeral: true });
+        return await interaction.editReply({ embeds: [embed] });
+      } else return await interaction.editReply({ content: `⚠ **\`'${cmdInput}' is not a valid command\`**`, ephemeral: true });
     }
 
     let totalCmds = 0;
@@ -43,6 +43,6 @@ module.exports = {
     
     embed.setFooter(`${totalCmds} total commands`);
 
-    return await interaction.reply({ embeds: [embed] });
+    return await interaction.editReply({ embeds: [embed] });
   }
 };

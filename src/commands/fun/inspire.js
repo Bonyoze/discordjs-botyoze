@@ -1,48 +1,26 @@
 const { SlashCommandBuilder } = require("@discordjs/builders"),
+{ getRedditPosts } = require("../../globals");
 fetch = require("node-fetch");
+
+const postFetchSize = 50; // number of video posts to get
+
+let lastPostId;
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("inspire")
     .setDescription("View questionable inspirational posters"),
   async execute(interaction) {
-    await interaction.deferReply();
+    const posts =  await getRedditPosts(
+      "inspirobot",
+      "hot",
+      lastPostId,
+      post => !post.data.is_video && post.data.post_hint === "image",
+      postFetchSize
+    );
 
-    try {
-      let body = await fetch(
-        "https://api.pushshift.io/reddit/search/submission/?subreddit=inspirobot&sort=desc&fields=url&over_18=false&is_video=false&size=100"
-      )
-        .then(res => res.json())
-        .then(body => { return body.data });
-      
-      while (body.length > 0) {
-        let type;
+    lastPostId = posts[posts.length - 1].data.id;
 
-        const index = Math.floor(Math.random() * body.length),
-        img = await fetch(
-          body[index].url
-        )
-          .then(res => {
-            type = res.headers.get("content-type");
-            return res.buffer();
-          });
-        
-        body.splice(index, 1);
-
-        if (type == "image/jpeg" || type == "image/png")
-          return await interaction.editReply({
-            files: [
-              {
-                attachment: img,
-                name: `inspire.${type == "image/jpeg" ? "jpg" : type == "image/png" && "png"}`
-              }
-            ]
-          });
-      }
-
-      return await interaction.editReply("⚠ **`Failed to find image in fetched batch`**");
-    } catch (err) {
-      console.log(err);
-    }
+    await interaction.editReply({ files: [ posts[Math.floor(Math.random() * posts.length)].data.url ] });
   }
 }
