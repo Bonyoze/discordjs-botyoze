@@ -1,4 +1,4 @@
-const { client } = require("../../bot.js"),
+const { client } = require("./bot.js"),
 fetch = require("node-fetch");
 
 module.exports = {
