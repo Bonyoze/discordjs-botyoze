@@ -2,21 +2,22 @@ const { SlashCommandBuilder } = require("@discordjs/builders"),
 { getRedditPosts } = require("../../globals");
 fetch = require("node-fetch");
 
-const postFetchSize = 50; // number of video posts to get
+const totalPosts = 10; // number of video posts to get
 
 let lastPostId;
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("inspire")
-    .setDescription("View questionable inspirational posters"),
+    .setDescription("Load a questionable inspirational poster (courtesy of r/inspirobot)"),
   async execute(interaction) {
     const posts = await getRedditPosts(
       "inspirobot",
-      "hot",
+      "top",
+      "all",
       lastPostId,
-      post => !post.data.is_video && post.data.post_hint === "image",
-      postFetchSize
+      post => post.data.post_hint === "image",
+      totalPosts
     );
 
     lastPostId = posts[posts.length - 1].data.id;

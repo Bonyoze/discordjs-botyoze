@@ -5,7 +5,7 @@ ffmpeg = require("fluent-ffmpeg"),
 fs = require("fs-extra");
 
 const resolutions = [360, 240, 140, 120, "2_4_M", "1_2_M", "600_K"],
-postFetchSize = 50, // number of video posts to get
+totalPosts = 20, // number of video posts to get
 vidMaxSize = 8; // megabytes
 
 let lastPostId;
@@ -13,14 +13,15 @@ let lastPostId;
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("retardio")
-    .setDescription("Load a random video from r/okbuddyretard"),
+    .setDescription("Load an OKBR video (courtesy of r/okbuddyretard)"),
   async execute(interaction) {
     let posts = await getRedditPosts(
       "okbuddyretard",
       "hot",
+      null,
       lastPostId,
       post => post.data.is_video,
-      postFetchSize
+      totalPosts
     );
 
     lastPostId = posts[posts.length - 1].data.id;

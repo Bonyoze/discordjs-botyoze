@@ -1,3 +1,12 @@
 {
-  "prefix": "="
+  "intents": [
+    "GUILDS",
+    "GUILD_MEMBERS",
+    "GUILD_BANS",
+    "GUILD_MESSAGES",
+    "DIRECT_MESSAGES",
+    "DIRECT_MESSAGE_REACTIONS",
+    "DIRECT_MESSAGE_TYPING"
+  ],
+  "tempDir": "tmp"
 }

@@ -11,14 +11,14 @@ module.exports = {
       column: s[s.length-1].slice(0,-1)
     }
   },
-  getRedditPosts: (sub, sort, start, filter, total) => {
+  getRedditPosts: (sub, sort, time, start, filter, total) => {
     return new Promise(async resolve => {
       let posts = [],
       after;
   
       while (posts.length != total) {
         await fetch(
-          `https://www.reddit.com/r/${sub}/${sort}.json?limit=100${after ? `&after=t3_${after}` : start ? `&after=t3_${start}` : ""}`
+          `https://www.reddit.com/r/${sub}/${sort}.json?limit=100${time ? `&t=${time}` : ""}${after ? `&after=t3_${after}` : start ? `&after=t3_${start}` : ""}`
         )
           .then(resp => resp.json())
           .then(async body => {
