@@ -1,5 +1,5 @@
 const { Client, Intents, Collection, MessageEmbed } = require("discord.js"),
-{ getErrInfo } = require("./globals.js"),
+{ getCommand, getErrInfo } = require("./globals.js"),
 { REST } = require("@discordjs/rest"),
 rest = new REST({ version: "9" }).setToken(process.env.BOT_TOKEN),
 { Routes } = require("discord-api-types/v9"),
@@ -109,22 +109,4 @@ const handleCommandInteraction = async interaction => {
 
     await interaction.followUp({ embeds: [errEmbed], ephemeral: true });
   });
-}
-
-const getCommand = async name => {
-  const categories = Array.from(client.commands.values());
-  for (let i = 0; i < categories.length; i++) {
-    const commands = Array.from(categories[i].values());
-    for (let ii = 0; ii < commands.length; ii++) {
-      const cmd = commands[ii];
-      if (cmd.data.name.toLowerCase() === name.toLowerCase()) {
-        return cmd;
-      }
-    }
-  }
-}
-
-module.exports = {
-  client: client,
-  getCommand
 }

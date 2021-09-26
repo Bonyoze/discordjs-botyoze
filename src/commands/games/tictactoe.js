@@ -1,5 +1,5 @@
-const { client } = require("../../bot.js"),
-{ SlashCommandBuilder } = require("@discordjs/builders"),
+const { SlashCommandBuilder } = require("@discordjs/builders"),
+{ client } = require("../../bot.js"),
 { MessageActionRow, MessageButton, MessageEmbed } = require("discord.js");
 
 const buildBoard = (data, disabled) => {
