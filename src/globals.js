@@ -1,19 +1,6 @@
-const { client } = require("./bot.js"),
-fetch = require("node-fetch");
+const fetch = require("node-fetch");
 
 module.exports = {
-  getCommand: async name => {
-    const categories = Array.from(client.commands.values());
-    for (let i = 0; i < categories.length; i++) {
-      const commands = Array.from(categories[i].values());
-      for (let ii = 0; ii < commands.length; ii++) {
-        const cmd = commands[ii];
-        if (cmd.data.name.toLowerCase() === name.toLowerCase()) {
-          return cmd;
-        }
-      }
-    }
-  },
   getErrInfo: err => {
     const e = err.stack.split("\n"),
     s = e[1].split(/\/|:/);

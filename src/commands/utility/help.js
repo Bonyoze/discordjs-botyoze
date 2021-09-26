@@ -1,5 +1,4 @@
-const { client } = require("../../bot.js"),
-{ getCommand } = require("../../globals.js"),
+const { client, getCommand } = require("../../bot.js"),
 { SlashCommandBuilder } = require("@discordjs/builders"),
 { MessageEmbed } = require("discord.js");
 
