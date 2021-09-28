@@ -12,5 +12,7 @@ BOT_ID=bot user id here
 BOT_OWNER_ID=bot owner user id here
 ```
 
+---
+
 ### Links:
 [Discord Server](https://discord.gg/hnf57sjJDP)
