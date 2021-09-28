@@ -1,12 +1,12 @@
 const { SlashCommandBuilder } = require("@discordjs/builders"),
-{ getRedditPosts } = require("../../globals");
+{ MessageAttachment } = require("discord.js"),
+{ getRedditPosts } = require("../../globals"),
 fetch = require("node-fetch"),
-ffmpeg = require("fluent-ffmpeg"),
-fs = require("fs-extra");
+ffmpeg = require("fluent-ffmpeg");
 
 const resolutions = [360, 240, 140, 120, "2_4_M", "1_2_M", "600_K"],
 totalPosts = 20, // number of video posts to get
-vidMaxSize = 8; // megabytes
+vidMaxSize = 8; // megabytes (will not try to get videos higher than this)
 
 let lastPostId;
 
@@ -25,74 +25,81 @@ module.exports = {
     );
 
     lastPostId = posts[posts.length - 1].data.id;
-
-    await fs.mkdir(`./tmp/${interaction.id}`);
-
-    let postUseable, post, resolution;
     
-    // find a useable post
-    while (!postUseable) {
-      if (posts.length == 0) return;
+    // find a post
+    const post = await (async () => {
+      for (let i = 0; i < posts.length; i++) {
+        // choose random post
+        const rand = Math.floor(Math.random() * posts.length),
+        post = posts[rand];
+        posts.splice(rand, 1);
 
-      // choose random post
-      const rand = Math.floor(Math.random() * posts.length);
-      post = posts[rand];
-      posts.splice(rand, 1);
-
-      await (async () => {
+        // check resolutions
         for (const res of resolutions) {
           const videoValid = await fetch(`${post.data.url}/DASH_${res}.mp4`)
             .then(async resp => {
               const data = await resp.text();
-              if (resp.status != 200 || data.length / 1024 / 1024 >= vidMaxSize) {
+              if (resp.status !== 200 || data.length / 1024 / 1024 > vidMaxSize) {
                 await fetch(`${post.data.url}/DASH_${res}`) // check for old video path
                   .then(async resp => {
                     const data = await resp.text();
-                    return resp.status == 200 && data.length / 1024 / 1024 < vidMaxSize;
+                    return resp.status === 200 && data.length / 1024 / 1024 <= vidMaxSize;
                   });
               } else return true;
             });
-              
-          if (videoValid) {
-            resolution = res;
-            postUseable = true;
-            return;
-          }
+                
+          if (videoValid)
+            return {
+              id: post.data.id,
+              url: post.data.url,
+              resolution: res
+            };
         }
-      })();
-    }
+      }
+    })();
 
-    // create the file
-    const fileDir = `./tmp/${interaction.id}/${post.data.id}.mp4`,
-    proc = new ffmpeg()
-      .addInput(`${post.data.url}/DASH_${resolution}.mp4`)
-      .withVideoCodec("libx264")
-      .withVideoBitrate(1000)
-      .addOptions(["-crf 24", "-preset veryfast"])
-      .output(fileDir)
-      .on("end", () => {
-        // send file
-        interaction.editReply({ files: [ fileDir ] })
-          .then(() => {
-            fs.rm(`./tmp/${interaction.id}`, { recursive: true });
-          });
-      });
-          
-    const audioValid = await fetch(`${post.data.url}/DASH_audio.mp4`)
+    if (!post) return interaction.editReply({ content: `⚠ **\`Failed to find a post\`**`, ephemeral: true });
+
+    // find audio
+    const audioValid = await fetch(`${post.url}/DASH_audio.mp4`)
       .then(async resp => {
-        if (resp.status != 200) {
-          await fetch(`${post.data.url}/audio`) // check for old audio path
+        if (resp.status !== 200) {
+          await fetch(`${post.url}/audio`) // check for old audio path
             .then(resp => {
-              return resp.status == 200;
+              return resp.status === 200;
             });
         } else return true;
       });
+    
+    // create attachment
+    const attachment = await new Promise(resolve => {
+      const vidURL = `${post.url}/DASH_${post.resolution}.mp4`,
+      fileName = `${post.id}.mp4`;
 
-    if (audioValid)
-      proc
-        .addInput(`${post.data.url}/DASH_audio.mp4`)
-        .withAudioCodec("aac");
+      if (audioValid) {
+        let buffer = new Buffer.alloc(0);
 
-    proc.run();
+        // combine video with audio
+        new ffmpeg()
+          .addInput(vidURL)
+          .videoCodec("libx264")
+          .videoBitrate(1000)
+          .addOptions([ "-crf 24", "-preset veryfast" ])
+          .addInput(`${post.url}/DASH_audio.mp4`)
+          .audioCodec("aac")
+          .outputFormat("mp4")
+          .outputOption("-movflags frag_keyframe+empty_moov")
+          .pipe()
+          .on("data", chunk => {
+            buffer = Buffer.concat([ buffer, chunk ]);
+          })
+          .on("end", () => {
+            resolve(new MessageAttachment(buffer, fileName));
+          });
+      } else
+        resolve(new MessageAttachment(vidURL, fileName));
+    });
+
+    interaction.editReply({ files: [ attachment ] });
   }
 }

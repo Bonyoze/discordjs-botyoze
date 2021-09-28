@@ -1,4 +1,4 @@
-const { client, getCommand } = require("../../bot.js"),
+const client = require("../../bot.js"),
 { SlashCommandBuilder } = require("@discordjs/builders"),
 { MessageEmbed } = require("discord.js");
 
@@ -15,7 +15,7 @@ module.exports = {
     const cmdInput = interaction.options.getString("command");
     
     if (cmdInput) {
-      const command = getCommand(cmdInput.toLowerCase());
+      const command = client.getCommand(cmdInput.toLowerCase());
       if (command) {
 
         const embed = new MessageEmbed()
@@ -25,7 +25,7 @@ module.exports = {
           .setDescription(command.data.description);
 
         return await interaction.editReply({ embeds: [embed] });
-      } else return await interaction.editReply({ content: `⚠ **\`'${cmdInput}' is not a valid command\`**`, ephemeral: true });
+      } else return interaction.editReply({ content: `⚠ **\`'${cmdInput}' is not a valid command\`**`, ephemeral: true });
     }
 
     let totalCmds = 0;
@@ -43,6 +43,6 @@ module.exports = {
     
     embed.setFooter(`${totalCmds} total commands`);
 
-    return await interaction.editReply({ embeds: [embed] });
+    return interaction.editReply({ embeds: [embed] });
   }
 };

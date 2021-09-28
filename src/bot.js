@@ -4,13 +4,9 @@ const { Client, Collection, MessageEmbed } = require("discord.js"),
 rest = new REST({ version: "9" }).setToken(process.env.BOT_TOKEN),
 { Routes } = require("discord-api-types/v9"),
 fs = require("fs-extra"),
-{ intents, tempDir } = require("../config.json");
+{ intents } = require("../config.json");
 
-// setup temp files folder
-if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
-fs.emptyDirSync(tempDir);
-
-const client = new Client({ intents: intents, ws: { properties: { $browser: "Discord iOS" } } });
+const client = module.exports = new Client({ intents });
 client.commands = new Collection();
 
 // login client
@@ -64,7 +60,7 @@ client.loadCommands = async () => {
   
 
   // reload slash commands
-  try {
+  /*try {
     console.log("Refreshing application (/) commands.");
 
     await rest.put(
@@ -73,7 +69,7 @@ client.loadCommands = async () => {
     ).then(console.log("Successfully reloaded application (/) commands."));
   } catch (err) {
     console.error(`Encountered an error while refreshing application (/) commands: ${err.stack}`)
-  }
+  }*/
 
   console.log("Finished loading commands.");
 }
@@ -87,12 +83,12 @@ client.handleCommandInteraction = async interaction => {
   await interaction.deferReply();
 
   await command.execute(interaction).catch(async err => {
-    const errInfo = getErrInfo(err),
+    const /*errInfo = getErrInfo(err),*/
     errEmbed = new MessageEmbed()
       .setColor("#000000")
       .setAuthor("An error occurred while the command was executing", client.user.displayAvatarURL({ format: "png", dynamic: true }))
       .setTitle(`\`${command.data.category.charAt(0).toUpperCase() + command.data.category.slice(1)} > ${command.data.name.charAt(0).toUpperCase() + command.data.name.slice(1)}\``)
-      .setDescription(`**File: **${errInfo.file}\n**Line: **${errInfo.line}\n**Column: **${errInfo.column}\n` + "```js\n" + err + "\n```");
+      .setDescription("```js\n" + err.stack + "\n```");
 
     await interaction.followUp({ embeds: [errEmbed], ephemeral: true });
   });
@@ -110,5 +106,3 @@ client.getCommand = async name => {
     }
   }
 }
-
-module.exports = client;

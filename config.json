@@ -7,6 +7,5 @@
     "DIRECT_MESSAGES",
     "DIRECT_MESSAGE_REACTIONS",
     "DIRECT_MESSAGE_TYPING"
-  ],
-  "tempDir": "tmp"
+  ]
 }
