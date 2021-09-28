@@ -1,9 +1,11 @@
 # Botyoze
-#### A Discord Bot by [Bonyoze](https://github.com/bonyoze)
+### A Discord Bot by [Bonyoze](https://github.com/bonyoze)
 
 WIP
 
-#### `.env`
+---
+
+### `.env`
 ```
 BOT_TOKEN=bot token here
 BOT_ID=bot user id here
