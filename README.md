@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="100" height="100" src="https://raw.githubusercontent.com/Bonyoze/discordjs-botyoze/main/src/assets/bot_icon.png">
+  <img width="150" height="150" src="https://raw.githubusercontent.com/Bonyoze/discordjs-botyoze/main/src/assets/bot_icon.png">
 </p>
 
 ---
