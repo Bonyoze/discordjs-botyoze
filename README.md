@@ -1,6 +1,5 @@
-<img width="100" height="100" src="https://raw.githubusercontent.com/Bonyoze/discordjs-botyoze/main/src/assets/bot_icon.png">
+<img width="100" height="100" src="https://raw.githubusercontent.com/Bonyoze/discordjs-botyoze/main/src/assets/bot_icon.png"><p style="display: inline-block;">Botyoze</p>
 
-# Botyoze
 ### A Discord Bot by [Bonyoze](https://github.com/bonyoze)
 
 WIP
