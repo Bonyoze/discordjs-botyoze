@@ -14,5 +14,8 @@ BOT_OWNER_ID=bot owner user id here
 
 ---
 
+### Requirements:
+[FFMPEG](https://ffmpeg.org/download.html)
+
 ### Links:
 [Discord Server](https://discord.gg/hnf57sjJDP)

@@ -4,27 +4,24 @@ const { SlashCommandBuilder } = require("@discordjs/builders"),
 fetch = require("node-fetch"),
 ffmpeg = require("fluent-ffmpeg");
 
-const resolutions = [360, 240, 140, 120, "2_4_M", "1_2_M", "600_K"],
-totalPosts = 20, // number of video posts to get
+const resolutions = [ 360, 240, 140, 120 ],
 vidMaxSize = 8; // megabytes (will not try to get videos higher than this)
 
-let lastPostId;
+let posts = [];
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("retardio")
     .setDescription("Load an OKBR video (courtesy of r/okbuddyretard)"),
   async execute(interaction) {
-    let posts = await getRedditPosts(
-      "okbuddyretard",
-      "hot",
-      null,
-      lastPostId,
-      post => post.data.is_video,
-      totalPosts
-    );
-
-    lastPostId = posts[posts.length - 1].data.id;
+    if (posts.length === 0)
+      posts = await getRedditPosts(
+        "okbuddyretard",
+        "hot",
+        null,
+        null,
+        post => post.data.is_video && !(post.data.media.reddit_video.is_gif || post.data.secure_media.reddit_video.is_gif)
+      );
     
     // find a post
     const post = await (async () => {
@@ -32,6 +29,7 @@ module.exports = {
         // choose random post
         const rand = Math.floor(Math.random() * posts.length),
         post = posts[rand];
+        
         posts.splice(rand, 1);
 
         // check resolutions
@@ -39,67 +37,60 @@ module.exports = {
           const videoValid = await fetch(`${post.data.url}/DASH_${res}.mp4`)
             .then(async resp => {
               const data = await resp.text();
-              if (resp.status !== 200 || data.length / 1024 / 1024 > vidMaxSize) {
-                await fetch(`${post.data.url}/DASH_${res}`) // check for old video path
-                  .then(async resp => {
-                    const data = await resp.text();
-                    return resp.status === 200 && data.length / 1024 / 1024 <= vidMaxSize;
-                  });
-              } else return true;
+              return resp.status === 200 && data.length / 1000 / 1000 <= vidMaxSize;
             });
                 
-          if (videoValid)
-            return {
-              id: post.data.id,
-              url: post.data.url,
-              resolution: res
-            };
+          if (videoValid) {
+            // video's good, now check if it has some audio
+            const audioValid = await fetch(`${post.data.url}/DASH_audio.mp4`)
+              .then(resp => {
+                return resp.status === 200;
+              });
+            
+            if (audioValid) {
+              // create the buffer
+              const buff = await new Promise(resolve => {
+                let buff = new Buffer.alloc(0);
+                
+                // combine video with audio
+                new ffmpeg()
+                  .addInput(`${post.data.url}/DASH_${res}.mp4`)
+                  .videoCodec("libx264")
+                  .videoBitrate(1024)
+                  .addOptions(["-crf 24", "-preset veryfast" ])
+                  .addInput(`${post.data.url}/DASH_audio.mp4`)
+                  .audioCodec("aac")
+                  .outputFormat("mp4")
+                  .outputOption("-movflags frag_keyframe+empty_moov")
+                  .pipe()
+                  .on("data", chunk => {
+                    buff = Buffer.concat([ buff, chunk ]);
+                  })
+                  .on("end", () => {
+                    resolve(buff);
+                  });
+              });
+
+              // test if it's still under the size limit
+              if (Buffer.byteLength(buff) / 1000 / 1000 <= vidMaxSize)
+                return {
+                  data: buff,
+                  title: post.data.title,
+                  id: post.data.id
+                }
+            }
+          }
         }
       }
     })();
 
     if (!post) return interaction.editReply({ content: `⚠ **\`Failed to find a post\`**`, ephemeral: true });
 
-    // find audio
-    const audioValid = await fetch(`${post.url}/DASH_audio.mp4`)
-      .then(async resp => {
-        if (resp.status !== 200) {
-          await fetch(`${post.url}/audio`) // check for old audio path
-            .then(resp => {
-              return resp.status === 200;
-            });
-        } else return true;
-      });
-    
-    // create attachment
-    const attachment = await new Promise(resolve => {
-      const vidURL = `${post.url}/DASH_${post.resolution}.mp4`,
-      fileName = `${post.id}.mp4`;
+    const fileName = post.title.replace(/[^a-z0-9_\-]/gi, "_");
 
-      if (audioValid) {
-        let buffer = new Buffer.alloc(0);
-
-        // combine video with audio
-        new ffmpeg()
-          .addInput(vidURL)
-          .videoCodec("libx264")
-          .videoBitrate(1000)
-          .addOptions([ "-crf 24", "-preset veryfast" ])
-          .addInput(`${post.url}/DASH_audio.mp4`)
-          .audioCodec("aac")
-          .outputFormat("mp4")
-          .outputOption("-movflags frag_keyframe+empty_moov")
-          .pipe()
-          .on("data", chunk => {
-            buffer = Buffer.concat([ buffer, chunk ]);
-          })
-          .on("end", () => {
-            resolve(new MessageAttachment(buffer, fileName));
-          });
-      } else
-        resolve(new MessageAttachment(vidURL, fileName));
+    interaction.editReply({
+      files: [ new MessageAttachment(post.data, `${fileName.length > 0 ? fileName : post.id}.mp4`) ],
+      allowedMentions: { parse: [] }
     });
-
-    interaction.editReply({ files: [ attachment ] });
   }
 }
