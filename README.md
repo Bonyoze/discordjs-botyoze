@@ -1,14 +1,14 @@
 <p align="center">
   <img width="150" height="150" src="https://raw.githubusercontent.com/Bonyoze/discordjs-botyoze/main/src/assets/bot_icon.png">
 </p>
-
----
 <h1 align="center">
   Botyoze
 </h1>
+<h4 align="center">
+  A Discord Bot by [Bonyoze](https://github.com/bonyoze) `(Bonyoze#7609)`
+</h4>
 
-# Botyoze
-#### A Discord Bot by [Bonyoze](https://github.com/bonyoze) `(Bonyoze#7609)`
+---
 
 WIP
 
