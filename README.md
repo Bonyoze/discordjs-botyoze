@@ -16,6 +16,7 @@ BOT_TOKEN=bot's token
 BOT_ID=bot's user id
 BOT_OWNER_ID=bot owner's user id
 ```
+
 #### config.json
 ```json
 {
@@ -24,7 +25,9 @@ BOT_OWNER_ID=bot owner's user id
   ]
 }
 ```
+
 **Install modules:** `npm install`
+
 **Start the bot:** `node index.js`
 
 ## Requirements:
