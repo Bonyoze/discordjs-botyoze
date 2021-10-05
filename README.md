@@ -12,15 +12,15 @@ WIP
 
 #### .env
 ```
-BOT_TOKEN=bot token here
-BOT_ID=bot user id here
-BOT_OWNER_ID=bot owner user id here
+BOT_TOKEN=bot's token
+BOT_ID=bot's user id
+BOT_OWNER_ID=bot owner's user id
 ```
 #### config.json
 ```json
 {
   "intents": [
-    /* list of bot intents here */
+    list of bot intents
   ]
 }
 ```
