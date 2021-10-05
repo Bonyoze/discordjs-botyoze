@@ -3,9 +3,9 @@
 </p>
 
 ---
-<p align="center">
+<h1 align="center">
   Botyoze
-</p>
+</h1>
 
 # Botyoze
 #### A Discord Bot by [Bonyoze](https://github.com/bonyoze) `(Bonyoze#7609)`
