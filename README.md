@@ -16,6 +16,7 @@ BOT_OWNER_ID=bot owner user id here
 ```
 
 ### Requirements:
+[Node.js (v16.6.0 or newer)](https://nodejs.org)
 [FFMPEG](https://ffmpeg.org/download.html)
 
 ### Links:
