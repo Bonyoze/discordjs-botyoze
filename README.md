@@ -23,6 +23,9 @@ BOT_OWNER_ID=bot owner's user id
     list of bot intents
   ]
 }
+
+**Install modules:** `npm install`
+**Start the bot:** `node index.js`
 ```
 
 ## Requirements:
