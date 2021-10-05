@@ -16,6 +16,14 @@ BOT_TOKEN=bot token here
 BOT_ID=bot user id here
 BOT_OWNER_ID=bot owner user id here
 ```
+#### config.json
+```json
+{
+  "intents": [
+    // list of bot intents here
+  ]
+}
+```
 
 ## Requirements:
 [Node.js (v16.6.0 or newer)](https://nodejs.org)
