@@ -4,7 +4,7 @@
 
 ---
 # Botyoze
-### A Discord Bot by [Bonyoze](https://github.com/bonyoze)
+### A Discord Bot by [Bonyoze](https://github.com/bonyoze) `(Bonyoze#7609)`
 
 WIP
 
