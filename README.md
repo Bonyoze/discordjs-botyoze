@@ -3,22 +3,27 @@
 </p>
 
 ---
+
 # Botyoze
-### A Discord Bot by [Bonyoze](https://github.com/bonyoze) `(Bonyoze#7609)`
+#### A Discord Bot by [Bonyoze](https://github.com/bonyoze) `(Bonyoze#7609)`
 
 WIP
 
-### `.env`
+---
+
+## Setup
+
+#### .env
 ```
 BOT_TOKEN=bot token here
 BOT_ID=bot user id here
 BOT_OWNER_ID=bot owner user id here
 ```
 
-### Requirements:
+## Requirements:
 [Node.js (v16.6.0 or newer)](https://nodejs.org)
 
 [FFMPEG](https://ffmpeg.org/download.html)
 
-### Other Links:
+## Other Links:
 [Discord Server](https://discord.gg/hnf57sjJDP)
