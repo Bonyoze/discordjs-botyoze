@@ -15,10 +15,10 @@ BOT_OWNER_ID=bot owner's user id
 ```
 
 #### config.json
-```json
+```
 {
   "intents": [
-    list_of_bot_intents
+    list of bot string intents
   ]
 }
 ```
