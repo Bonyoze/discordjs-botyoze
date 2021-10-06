@@ -5,7 +5,7 @@
   Botyoze
 </h1>
 <h4 align="center">
-  A Discord Bot by [Bonyoze](https://github.com/bonyoze) `(Bonyoze#7609)`
+  A Discord Bot by <a href="https://github.com/bonyoze">Bonyoze</a> `(Bonyoze#7609)`
 </h4>
 
 ---
