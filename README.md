@@ -18,7 +18,7 @@ BOT_OWNER_ID=bot owner's user id
 ```json
 {
   "intents": [
-    list of bot intents
+    list_of_bot_intents
   ]
 }
 ```
