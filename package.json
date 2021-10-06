@@ -3,11 +3,8 @@
   "version": "3.0.0",
   "description": "A discord bot that does the cool",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "Bonyoze",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",

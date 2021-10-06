@@ -7,6 +7,7 @@ fs = require("fs-extra"),
 { intents } = require("../config.json");
 
 const client = module.exports = new Client({ intents });
+client.categories = [];
 client.commands = new Collection();
 
 // login client
@@ -23,7 +24,7 @@ client.on("interactionCreate", async interaction => {
   const func = (() => {
     switch (true) {
       case interaction.isCommand():
-        return client.handleCommandInteraction;
+        return client.handleCommand;
       case interaction.isContextMenu():
         return;
       case interaction.isSelectMenu():
@@ -40,7 +41,7 @@ client.loadCommands = async () => {
 
   const categories = fs.readdirSync("./src/commands");
   for (const category of categories) {
-    if (!client.commands.get(category)) client.commands.set(category, new Collection());
+    client.categories.push(category);
     const commands = fs.readdirSync(`./src/commands/${category}`);
     for (const command of commands) {
       try {
@@ -51,7 +52,7 @@ client.loadCommands = async () => {
         cmd.data.category = category;
 
         // add to collection
-        client.commands.get(category).set(cmd.data.name, cmd);
+        client.commands.set(cmd.data.name, cmd);
       } catch (err) {
         console.error(`Failed to load command ${command}: ${err.stack}`);
       }
@@ -60,7 +61,7 @@ client.loadCommands = async () => {
   
 
   // reload slash commands
-  /*try {
+  try {
     console.log("Refreshing application (/) commands.");
 
     await rest.put(
@@ -69,13 +70,13 @@ client.loadCommands = async () => {
     ).then(console.log("Successfully reloaded application (/) commands."));
   } catch (err) {
     console.error(`Encountered an error while refreshing application (/) commands: ${err.stack}`)
-  }*/
+  }
 
   console.log("Finished loading commands.");
 }
 
-client.handleCommandInteraction = async interaction => {
-  const command = await client.getCommand(interaction.commandName);
+client.handleCommand = async interaction => {
+  const command = client.commands.get(interaction.commandName);
 
   if (command.data.adminOnly && !interaction.user.hasPermission("ADMINISTRATOR")) return interaction.reply("**`This command may only be used by administrators in this server`**");
   if (command.data.ownerOnly && interaction.user.id != process.env.BOT_OWNER_ID) return interaction.reply("**`This command may only be used by the owner of the bot`**");
@@ -92,17 +93,4 @@ client.handleCommandInteraction = async interaction => {
 
     await interaction.followUp({ embeds: [errEmbed], ephemeral: true });
   });
-}
-
-client.getCommand = async name => {
-  const categories = Array.from(client.commands.values());
-  for (let i = 0; i < categories.length; i++) {
-    const commands = Array.from(categories[i].values());
-    for (let ii = 0; ii < commands.length; ii++) {
-      const cmd = commands[ii];
-      if (cmd.data.name.toLowerCase() === name.toLowerCase()) {
-        return cmd;
-      }
-    }
-  }
 }
