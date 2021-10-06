@@ -23,10 +23,6 @@ BOT_OWNER_ID=bot owner's user id
 }
 ```
 
-Install modules: `npm install`
-
-Start bot: `node index.js`
-
 ## Requirements:
 [Node.js (v16.6.0 or newer)](https://nodejs.org)
 
