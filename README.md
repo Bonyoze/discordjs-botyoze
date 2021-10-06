@@ -4,11 +4,9 @@
 <h1 align="center">
   Botyoze
 </h1>
-<h4 align="center">
+<h2 align="center">
   A Discord Bot by <a href="https://github.com/bonyoze">Bonyoze</a> <code>(Bonyoze#7609)</code>
-</h4>
-
----
+</h2>
 
 WIP
 
