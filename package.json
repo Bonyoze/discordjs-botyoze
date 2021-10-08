@@ -11,16 +11,19 @@
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
+    "@discordjs/voice": "^0.6.0",
     "cheerio": "^1.0.0-rc.9",
     "discord-api-types": "^0.22.0",
     "discord.js": "^13.2.0",
     "dotenv": "^10.0.0",
     "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "^10.0.0",
+    "libsodium-wrappers": "^0.7.9",
     "mysql2": "^2.3.0",
     "node-fetch": "^2.6.1",
     "path": "^0.12.7",
-    "qs": "^6.10.1"
+    "qs": "^6.10.1",
+    "ytdl-core": "^4.9.1"
   },
   "engines": {
     "node": ">=v16.6.0"
