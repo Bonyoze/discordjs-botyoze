@@ -26,6 +26,6 @@ module.exports = {
         .setDescription(`<#${voiceConnect.joinConfig.channelId}> **Currently Playing:** [*\`${playing.name}\`*](${playing.url}) - <@${playing.user.id}>\n\n${listStr}`);
 
       await interaction.editReply({ embeds: [ embed ] });
-    } else await interaction.editReply("Queue is empty.");
+    } else await interaction.editReply("Queue is empty");
   }
 }
