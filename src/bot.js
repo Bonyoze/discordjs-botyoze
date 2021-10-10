@@ -1,5 +1,4 @@
 const { Client, Collection, MessageEmbed } = require("discord.js"),
-{ getErrInfo } = require("./globals.js"),
 { REST } = require("@discordjs/rest"),
 rest = new REST({ version: "9" }).setToken(process.env.BOT_TOKEN),
 { Routes } = require("discord-api-types/v9"),
@@ -84,8 +83,7 @@ client.handleCommand = async interaction => {
   await interaction.deferReply();
 
   await command.execute(interaction).catch(async err => {
-    const /*errInfo = getErrInfo(err),*/
-    errEmbed = new MessageEmbed()
+    const errEmbed = new MessageEmbed()
       .setColor("#000000")
       .setAuthor("An error occurred while the command was executing", client.user.displayAvatarURL({ format: "png", dynamic: true }))
       .setTitle(`\`${command.data.category.charAt(0).toUpperCase() + command.data.category.slice(1)} > ${command.data.name.charAt(0).toUpperCase() + command.data.name.slice(1)}\``)
