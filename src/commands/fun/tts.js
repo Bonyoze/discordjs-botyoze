@@ -5,6 +5,7 @@ client = require("../../bot.js");
 
 const langToFlag = {
   en: "gb",
+  pt: "br",
   el: "gr",
   zh: "cn",
   ja: "jp",
