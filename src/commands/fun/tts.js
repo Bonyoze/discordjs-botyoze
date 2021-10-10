@@ -9,7 +9,7 @@ const langToFlag = {
   el: "gr",
   zh: "cn",
   ja: "jp",
-  ko: "kp",
+  ko: "kr",
   cs: "cz",
   da: "dk",
   hi: "in",
