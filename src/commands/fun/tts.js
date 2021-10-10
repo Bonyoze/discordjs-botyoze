@@ -49,7 +49,7 @@ module.exports = {
         const text = interaction.options.getString("text"),
         voice = interaction.options.getString("voice") ? interaction.options.getString("voice").toLowerCase() : "daniel";
 
-        interaction.editReply(voices[voice] ? { files: [ new MessageAttachment(buildUrl(text, voices[voice]), `tts_${voice}.mp3`) ] } : `⚠ **\`${voice}\` is not a valid voice (view the list to see what's supported)**`);
+        await interaction.editReply(voices[voice] ? { files: [ new MessageAttachment(buildUrl(text, voices[voice]), `tts_${voice}.mp3`) ] } : `⚠ **\`${voice}\` is not a valid voice (view the list to see what's supported)**`);
 
         break;
       case "list":
@@ -67,7 +67,7 @@ module.exports = {
         while (list.length)
           embed.addField("** **", `>>> ${list.splice(0, 56).join("\n")}`, true);
 
-        interaction.editReply({ embeds: [ embed ] });
+        await interaction.editReply({ embeds: [ embed ] });
 
         break;
     }
