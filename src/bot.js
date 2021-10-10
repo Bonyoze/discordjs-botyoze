@@ -89,7 +89,7 @@ client.handleCommand = async interaction => {
       .setColor("#000000")
       .setAuthor("An error occurred while the command was executing", client.user.displayAvatarURL({ format: "png", dynamic: true }))
       .setTitle(`\`${command.data.category.charAt(0).toUpperCase() + command.data.category.slice(1)} > ${command.data.name.charAt(0).toUpperCase() + command.data.name.slice(1)}\``)
-      .setDescription("```js\n" + err.stack + "\n```");
+      .setDescription("```js\n" + err.stack.replaceAll(process.cwd() + "\\", "") + "\n```");
 
     await interaction.followUp({ embeds: [errEmbed], ephemeral: true });
   });
