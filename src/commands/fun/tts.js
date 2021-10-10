@@ -3,6 +3,18 @@ const { SlashCommandBuilder } = require("@discordjs/builders"),
 { buildUrl, voices } = require("oddcast-tts-demo"),
 client = require("../../bot.js");
 
+const langToFlag = {
+  en: "gb",
+  el: "gr",
+  zh: "cn",
+  ja: "jp",
+  ko: "kp",
+  cs: "cz",
+  da: "dk",
+  hi: "in",
+  eo: "white"
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("tts")
@@ -30,7 +42,7 @@ module.exports = {
     ),
   async execute(interaction) {
     const command = interaction.options.getSubcommand();
-
+    
     switch (command) {
       case "create":
         const text = interaction.options.getString("text"),
@@ -44,7 +56,12 @@ module.exports = {
           .setColor("#000000")
           .setAuthor("TTS Voices", client.user.displayAvatarURL({ format: "png", dynamic: true }))
         
-        let list = Object.keys(voices).map(x => `\`${x}\``);
+        
+        let list = [];
+
+        for (const [index, data] of Object.entries(voices)) {
+          list.push(`:flag_${langToFlag[data.language.code] ?? data.language.code}:\`${index}\``);
+        }
 
         while (list.length)
           embed.addField("** **", `>>> ${list.splice(0, 56).join("\n")}`, true);
