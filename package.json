@@ -21,6 +21,7 @@
     "libsodium-wrappers": "^0.7.9",
     "mysql2": "^2.3.0",
     "node-fetch": "^2.6.1",
+    "oddcast-tts-demo": "^1.1.1",
     "path": "^0.12.7",
     "qs": "^6.10.1",
     "ytdl-core": "^4.9.1"
