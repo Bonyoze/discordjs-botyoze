@@ -20,7 +20,7 @@ module.exports = {
 
         const embed = new MessageEmbed()
           .setColor("#000000")
-          .setAuthor("Bot Help", client.user.displayAvatarURL({ format: "png", dynamic: true }))
+          .setAuthor("Command Info", client.user.displayAvatarURL({ format: "png", dynamic: true }))
           .setTitle(`\`${command.data.category.charAt(0).toUpperCase() + command.data.category.slice(1)} > ${command.data.name.charAt(0).toUpperCase() + command.data.name.slice(1)}\``)
           .setDescription(command.data.description);
 
@@ -30,7 +30,7 @@ module.exports = {
 
     const embed = new MessageEmbed()
       .setColor("#000000")
-      .setAuthor("Command Info", client.user.displayAvatarURL({ format: "png", dynamic: true }))
+      .setAuthor("Bot Help", client.user.displayAvatarURL({ format: "png", dynamic: true }))
       .setTitle("Use *`/help <command>`* to get info on a command.");
 
     for (const category of client.categories) {

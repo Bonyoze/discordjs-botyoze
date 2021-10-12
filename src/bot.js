@@ -1,8 +1,8 @@
 const { Client, Collection, MessageEmbed } = require("discord.js"),
+fs = require("fs-extra"),
 { REST } = require("@discordjs/rest"),
 rest = new REST({ version: "9" }).setToken(process.env.BOT_TOKEN),
 { Routes } = require("discord-api-types/v9"),
-fs = require("fs-extra"),
 { intents } = require("../config.json");
 
 const client = module.exports = new Client({ intents });
@@ -56,19 +56,6 @@ client.loadCommands = async () => {
         console.error(`Failed to load command ${command}: ${err.stack}`);
       }
     }
-  }
-  
-
-  // reload slash commands
-  try {
-    console.log("Refreshing application (/) commands.");
-
-    await rest.put(
-      Routes.applicationCommands(process.env.BOT_ID),
-      { body: slashComms }
-    ).then(console.log("Successfully reloaded application (/) commands."));
-  } catch (err) {
-    console.error(`Encountered an error while refreshing application (/) commands: ${err.stack}`)
   }
 
   console.log("Finished loading commands.");
