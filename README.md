@@ -3,7 +3,7 @@
 
 ### A Discord Bot by [Bonyoze](https://github.com/bonyoze) `(Bonyoze#7609)`
 
-*A cool bot that does stuff.* **(Still a work in progress!)**
+*A cool bot that does stuff.* **(Still a work in progress!)** **(Currently outdated, a rewrite is coming soon)**
 
 ## Setup
 
